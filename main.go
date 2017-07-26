@@ -19,7 +19,7 @@ type visitor struct {
 
 func (v *visitor) Visit(node ast.Node) ast.Visitor {
 	switch n := node.(type) {
-	case *ast.RangeStmt: // checkr ange statements
+	case *ast.RangeStmt: // check range statements
 		key, _ := n.Key.(*ast.Ident)
 		val, _ := n.Value.(*ast.Ident)
 		if key == nil && val == nil { // nothing to check
@@ -34,12 +34,13 @@ func (v *visitor) Visit(node ast.Node) ast.Visitor {
 			if !ok {
 				return true
 			}
-			if i.Name == key.Name { // that is the range key -> we don't thing that's a good idea
-				fmt.Printf("%v Taking pointer to range key '%s'!\n", v.program.Fset.Position(i.Pos()), key)
+			if i.Name == key.Name { // that is the range key -> don't think that's a good idea
+				fmt.Printf("%v Taking pointer to range key '%s'!\n",
+					v.program.Fset.Position(i.Pos()), key)
 				v.failed = true
-			}
-			if i.Name == val.Name { // that is the range value -> we don't thing that's a good idea
-				fmt.Printf("%v Taking pointer to range value '%s'!\n", v.program.Fset.Position(i.Pos()), val)
+			} else if i.Name == val.Name { // that is the range value -> don't think that's a good idea
+				fmt.Printf("%v Taking pointer to range value '%s'!\n",
+					v.program.Fset.Position(i.Pos()), val)
 				v.failed = true
 			}
 			return true
@@ -68,7 +69,7 @@ func main() {
 
 	program, err := config.Load()
 	if err != nil {
-		log.Fatalf("could not load program code: %s", err)
+		log.Fatalf("Could not load program code: %s", err)
 	}
 
 	failed := false
